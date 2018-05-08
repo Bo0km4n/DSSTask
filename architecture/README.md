@@ -11,6 +11,10 @@
 - `make example-tcp-cli`
 - `make example-udp-cli`
 
+### run example with log file
+- `make example-tcp-with-output`
+- `make example-udp-with-output`
+- `make example-server-with-outpt`
 
 ## About source code
 ```
