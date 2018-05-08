@@ -3,6 +3,7 @@ package layer2
 import (
 	"bytes"
 	"fmt"
+	"log"
 
 	"github.com/Bo0km4n/DSSTask/architecture/common"
 )
@@ -60,7 +61,7 @@ func (d *DTCP) PP(mode int, digest []byte) {
 		if bytes.Compare(digest, d.Digest) == 0 {
 			fmt.Println("packet is protected")
 		} else {
-			fmt.Println("packet is tempered")
+			log.Fatal("[FATAL] packet is tempered")
 		}
 	}
 }
