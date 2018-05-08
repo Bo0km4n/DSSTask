@@ -55,7 +55,7 @@ func ConvertBytesToInt(b []byte) int32 {
 
 // GetTCPProtocolType //
 func GetTCPProtocolType() []byte {
-	return []byte{0x00, 0x00, 0x00, 0x11}
+	return []byte{0x00, 0x00, 0x00, 0x06}
 }
 
 // GetUDPProtocolType //
