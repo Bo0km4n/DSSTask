@@ -4,6 +4,7 @@
 
 ```
 $ cd src
+$ mkdir bin
 $ make run.client
 ```
 
