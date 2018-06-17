@@ -18,10 +18,12 @@ public class Server {
 
         // Handlers
         StructFetchHandler sfh = new StructFetchHandler();
+        StructPostHandler sph = new StructPostHandler();
 
 
         server.setExecutor(Executors.newCachedThreadPool());  // Executor の設定
         server.createContext("/api/v1/struct", sfh);
+        server.createContext("/api/v1/post_struct", sph);
         server.start();
         System.out.println("start http listening :18888");
     }
