@@ -1,7 +1,7 @@
 JAVAC = javac
 JAVA = java
 
-SRC = client/client.c client/net.c
+SRC = client/*.c
 GCC = gcc
 OBJ = bin/client
 

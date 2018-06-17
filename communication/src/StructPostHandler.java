@@ -15,34 +15,17 @@ public class StructPostHandler extends Middleware implements HttpHandler {
     public void handle(HttpExchange ex) throws IOException {
         // リクエストのヘッダなどを表示
         logRequest(ex);
-        byte[] body = "hello".getBytes();
         InputStream reqBody = ex.getRequestBody();
-        System.out.println(inputStreamToString(reqBody));
-        // レスポンスを返す
-        respond(ex, body);
-    }
-
-    private static String inputStreamToString(InputStream is) throws IOException {
-        BufferedReader reader = null;
-        reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String b = null;
-        while ((b=reader.readLine()) !=null){
-            sb.append(b);
+        
+        try {
+            ObjectInputStream ois = new ObjectInputStream(reqBody);
+            Person p = (Person)ois.readObject();
+            Task t = new Task();
+            t.hello(p);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return sb.toString();
-    }
-
-    private static byte[] inputStreamToByteArray(InputStream is) throws IOException {
-        ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        byte [] buffer = new byte[1024];
-        while(true) {
-            int len = is.read(buffer);
-            if(len < 0) {
-                break;
-            }
-            bout.write(buffer, 0, len);
-        }
-        return bout.toByteArray();
+        byte[] b = "ok".getBytes(StandardCharsets.UTF_8);
+        respond(ex, b);
     }
 }

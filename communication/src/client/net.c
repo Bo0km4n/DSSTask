@@ -3,6 +3,7 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "net.h"
+#include "util.h"
 
 size_t write_memory_callback(void* ptr, size_t size, size_t nmemb, void* data) {
     if (size * nmemb == 0)
@@ -44,5 +45,22 @@ void fetch_struct(Memory *buf) {
 
     free(mem->memory);
     free(mem);
+}
 
+void post_struct(struct bytes_t b) {
+    CURL *curl = curl_easy_init();
+
+    Memory* mem = malloc(sizeof(Memory*));
+
+    mem->size = 0;
+    mem->memory = NULL;
+
+    char host[256];
+    sprintf(host, "%s:%d/api/v1/post_struct", HOST, PORT);
+    curl_easy_setopt(curl, CURLOPT_URL, host);
+    curl_easy_setopt(curl, CURLOPT_POST, 1);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, b.head);
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, b.len);
+    curl_easy_perform(curl);
+    curl_easy_cleanup(curl);
 }
