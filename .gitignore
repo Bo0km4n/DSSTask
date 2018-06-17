@@ -1,2 +1,3 @@
 communication/dummy-rpc-java-c/
 communication/src/*.class
+communication/src/bin/
