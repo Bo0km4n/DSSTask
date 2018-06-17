@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "parser.h": "c",
+        "hexdump.h": "c",
+        "descriptor.h": "c",
+        "serializer.h": "c"
+    }
+}
