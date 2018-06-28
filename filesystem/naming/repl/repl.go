@@ -5,11 +5,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
+
+	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/disk"
 )
 
 const PROMPT = ">> "
+
+var wd *inode.Inode
 
 func Start(in io.Reader, out io.Reader) {
 	scanner := bufio.NewScanner(in)
@@ -17,7 +22,8 @@ func Start(in io.Reader, out io.Reader) {
 	if err := d.Load("v6root"); err != nil {
 		log.Fatal(err)
 	}
-	wd := d.GetInode(disk.ROOT)
+	wd = d.GetInode(disk.ROOT)
+	d.LoadFile(wd)
 	for {
 		fmt.Printf(PROMPT)
 		scanned := scanner.Scan()
@@ -27,7 +33,21 @@ func Start(in io.Reader, out io.Reader) {
 
 		line := scanner.Text()
 
-		fmt.Println(line)
+		exec(line)
 	}
+}
 
+func exec(stmt string) {
+	args := strings.Split(stmt, " ")
+	cmd := args[0]
+	opts := args[1:]
+
+	switch cmd {
+	case "ls":
+		fmt.Println("ls", opts)
+	case "cd":
+		fmt.Println("cd", opts)
+	default:
+		fmt.Println("not supported ", cmd)
+	}
 }

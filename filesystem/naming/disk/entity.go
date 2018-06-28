@@ -9,11 +9,18 @@ import (
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/byte"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/filesys"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
+	"github.com/k0kubun/pp"
 )
 
 const BLOCK = 512
 const INODE_SIZE = 32
 const ROOT = 1
+
+// imode
+const (
+	ILARG = 0x0100
+	IFMT  = 0x0600
+)
 
 type Disk struct {
 	BootArea    bytes.BytesT
@@ -137,4 +144,20 @@ func castInode(b []byte) *inode.Inode {
 
 func (d *Disk) GetInode(index int) *inode.Inode {
 	return d.Inodes[index-1]
+}
+
+func (d *Disk) LoadFile(inode *inode.Inode) *bytes.BytesT {
+	var b bytes.BytesT
+
+	b.Len = inode.GetFileSize()
+
+	imode := inode.Imode >> 9
+
+	if imode == ILARG {
+		log.Println("Sorry, not implemented indirect refference.")
+	} else {
+		pp.Println(imode)
+		pp.Println(b)
+	}
+	return &b
 }
