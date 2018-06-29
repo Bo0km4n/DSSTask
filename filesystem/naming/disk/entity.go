@@ -8,9 +8,9 @@ import (
 	"os"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/byte"
+	"github.com/Bo0km4n/DSSTask/filesystem/naming/entry"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/filesys"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
-	"github.com/k0kubun/pp"
 )
 
 const BLOCK = 512
@@ -160,7 +160,6 @@ func (d *Disk) LoadFile(inode *inode.Inode) *bytes.BytesT {
 		for i := 0; i < b.Len; i += BLOCK {
 			len := math.Min(float64(b.Len-i), float64(i+BLOCK))
 			saddr := d.iaddrToSaddr(inode.IAddr[i/BLOCK])
-			pp.Println(len, saddr)
 			b.Head = append(b.Head, d.StorageArea.Head[saddr:saddr+int(len)]...)
 		}
 	}
@@ -169,4 +168,19 @@ func (d *Disk) LoadFile(inode *inode.Inode) *bytes.BytesT {
 
 func (d *Disk) iaddrToSaddr(addr uint16) int {
 	return int(addr - d.FileSys.SIsize - uint16(2))
+}
+
+func (d *Disk) AssignBytesToEntries(b *bytes.BytesT) []*entry.Entry {
+	entries := make([]*entry.Entry, 0)
+
+	for i := 0; i < b.Len; i += 16 {
+		item := entry.Entry{}
+		itemBody := b.Head[i : i+16]
+		binary.Read(gobytes.NewBuffer(itemBody[0:2]), binary.LittleEndian, &item.Ino)
+		binary.Read(gobytes.NewBuffer(itemBody[2:16]), binary.LittleEndian, &item.Name)
+
+		entries = append(entries, &item)
+	}
+
+	return entries
 }
