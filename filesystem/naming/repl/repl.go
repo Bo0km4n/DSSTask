@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
+	"github.com/k0kubun/pp"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/disk"
 )
@@ -49,7 +50,7 @@ func exec(stmt string) {
 	case "ls":
 		ls(opts...)
 	case "cd":
-		fmt.Println("cd", opts)
+		cd(opts...)
 	default:
 		fmt.Println("not supported ", cmd)
 	}
@@ -59,6 +60,8 @@ func ls(args ...string) {
 	dir := d.LoadFile(wd)
 
 	entries := d.AssignBytesToEntries(dir)
+
+	// pp.Println(entries)
 
 	printBuffer := bytes.NewBufferString("")
 
@@ -75,6 +78,56 @@ func ls(args ...string) {
 		}
 
 		printBuffer = bytes.NewBufferString("")
+	}
+}
+
+func cd(args ...string) {
+	paths := strings.Split(args[0], "/")
+	node := wd
+	var target *inode.Inode
+
+	if paths[0] == "" || len(args) == 0 {
+		node = d.GetInode(disk.ROOT)
+	}
+
+	for idx := range paths {
+		if paths[idx] == "" {
+			continue
+		}
+		dir := d.LoadFile(node)
+		entries := d.AssignBytesToEntries(dir)
+		for i := range entries {
+			if paths[idx] == entries[i].GetName() {
+				pp.Println(entries[i].GetName(), entries[i].GetIno())
+				target = d.GetInode(int(entries[i].Ino))
+			}
+		}
+
+		if target.Imode&inode.IFDIR != 0x00 {
+			node = target
+		} else {
+			node = nil
+			break
+		}
+	}
+
+	if node != nil {
+		wd = node
+
+		// debug
+		// sizeE := unsafe.Sizeof(entry.Entry{})
+		// b := d.LoadFile(wd)
+		// body := b.Head[0:sizeE]
+		// t2 := (*(*entry.Entry)(unsafe.Pointer(&body[0])))
+		// pp.Println(t2)
+
+		// b := d.LoadFile(node)
+		// pp.Println(len(b.Head), b.Len)
+		// entries := d.AssignBytesToEntriesDebug(b)
+		// pp.Println(entries[0].GetIno(), entries[0].GetName())
+
+	} else {
+		log.Println("no such directory")
 	}
 }
 
