@@ -10,7 +10,6 @@ import (
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/entry"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/filesys"
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
-	"github.com/k0kubun/pp"
 )
 
 const BLOCK = 512
@@ -48,11 +47,9 @@ func (d *Disk) Load(fileName string) error {
 
 	log.Println("Step: reading boot area... ")
 	d.BootArea = readBlocks(fp, 1)
-	log.Println("done!")
 
 	log.Println("Step: reading super area... ")
 	d.SupreArea = readBlocks(fp, 1)
-	log.Println("done!")
 
 	d.assignFileSys(d.SupreArea)
 	d.assignInode(fp)
@@ -88,8 +85,6 @@ func (d *Disk) assignFileSys(block bytes.BytesT) {
 	binary.Read(gobytes.NewBuffer(block.Head[411:412]), binary.LittleEndian, &d.FileSys.SRonly)
 	binary.Read(gobytes.NewBuffer(block.Head[412:416]), binary.LittleEndian, &d.FileSys.STime)
 	binary.Read(gobytes.NewBuffer(block.Head[416:512]), binary.LittleEndian, &d.FileSys.Pad)
-
-	log.Println("done!")
 }
 
 func (d *Disk) assigneStorage(fp *os.File) {
@@ -97,7 +92,6 @@ func (d *Disk) assigneStorage(fp *os.File) {
 
 	sfsize := int32(d.FileSys.SFsize)
 	d.StorageArea = readBlocks(fp, int(sfsize))
-	log.Println("done!")
 }
 
 func (d *Disk) assignInode(fp *os.File) {
@@ -152,18 +146,18 @@ func (d *Disk) LoadFile(inode *inode.Inode) *bytes.BytesT {
 
 	b.Len = inode.GetFileSize()
 	b.Head = make([]byte, 0)
-	imode := inode.Imode >> 9
 
-	if imode == ILARG {
+	if inode.Imode&ILARG == 0x01 {
 		log.Println("Sorry, not implemented indirect refference.")
+		return &b
 	} else {
 		for i := 0; i < b.Len; i += BLOCK {
 			len := getMin(b.Len-i, i+BLOCK)
 			saddr := d.iaddrToSaddr(inode.IAddr[i/BLOCK]) * BLOCK
-			pp.Println(saddr, inode.IAddr)
 			b.Head = append(b.Head, d.StorageArea.Head[saddr:saddr+len]...)
 		}
 	}
+
 	return &b
 }
 

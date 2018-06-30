@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
-	"github.com/k0kubun/pp"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/disk"
 )
@@ -67,14 +66,18 @@ func ls(args ...string) {
 
 	for _, v := range entries {
 		if isContainArgs(args, "-l") && v.Ino != 0x0000 {
-			inode := d.GetInode(int(v.Ino))
-			printBuffer.WriteString(inode.GetDetail())
-			printBuffer.WriteString(fmt.Sprintf("%10d ", inode.GetFileSize()))
+			if len(d.Inodes) > int(v.Ino) {
+				inode := d.GetInode(int(v.Ino))
+				printBuffer.WriteString(inode.GetDetail())
+				printBuffer.WriteString(fmt.Sprintf("%10d ", inode.GetFileSize()))
+			}
 		}
 
 		if v.Ino != 0x0000 {
-			printBuffer.WriteString(v.GetName())
-			fmt.Println(printBuffer.String())
+			if len(d.Inodes) > int(v.Ino) {
+				printBuffer.WriteString(v.GetName())
+				fmt.Println(printBuffer.String())
+			}
 		}
 
 		printBuffer = bytes.NewBufferString("")
@@ -98,7 +101,6 @@ func cd(args ...string) {
 		entries := d.AssignBytesToEntries(dir)
 		for i := range entries {
 			if paths[idx] == entries[i].GetName() {
-				pp.Println(entries[i].GetName(), entries[i].GetIno())
 				target = d.GetInode(int(entries[i].Ino))
 			}
 		}

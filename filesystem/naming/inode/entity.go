@@ -21,7 +21,7 @@ const (
 )
 
 func (i *Inode) GetFileSize() int {
-	return int(uint16(i.ISize0)<<8 + i.ISize1)
+	return int(i.ISize0<<8) + int(i.ISize1)
 }
 
 func (i *Inode) GetDetail() string {
