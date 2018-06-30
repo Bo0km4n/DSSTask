@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 
 	"github.com/Bo0km4n/DSSTask/filesystem/naming/inode"
@@ -50,6 +51,9 @@ func exec(stmt string) {
 		ls(opts...)
 	case "cd":
 		cd(opts...)
+	case "exit":
+		log.Println("bye")
+		os.Exit(0)
 	default:
 		fmt.Println("not supported ", cmd)
 	}
@@ -115,19 +119,6 @@ func cd(args ...string) {
 
 	if node != nil {
 		wd = node
-
-		// debug
-		// sizeE := unsafe.Sizeof(entry.Entry{})
-		// b := d.LoadFile(wd)
-		// body := b.Head[0:sizeE]
-		// t2 := (*(*entry.Entry)(unsafe.Pointer(&body[0])))
-		// pp.Println(t2)
-
-		// b := d.LoadFile(node)
-		// pp.Println(len(b.Head), b.Len)
-		// entries := d.AssignBytesToEntriesDebug(b)
-		// pp.Println(entries[0].GetIno(), entries[0].GetName())
-
 	} else {
 		log.Println("no such directory")
 	}

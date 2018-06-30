@@ -114,7 +114,6 @@ func (d *Disk) assignInode(fp *os.File) {
 		d.Inodes = append(d.Inodes, in)
 	}
 	log.Printf("read %d bytes from file\n", c)
-	log.Println("done!")
 	return
 }
 
